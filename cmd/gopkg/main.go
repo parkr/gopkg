@@ -10,6 +10,9 @@ import (
 )
 
 func main() {
+	var debug bool
+	flag.BoolVar(&debug, "debug", false, "Print debugging output")
+
 	flag.Parse()
 
 	if flag.NArg() != 1 {
@@ -29,6 +32,10 @@ func main() {
 		filepath.Walk(gosrc(), func(path string, info os.FileInfo, err error) error {
 			if filepath.Base(path) == ".git" && info.IsDir() {
 				fmt.Println(packageNameFromSourcePath(filepath.Dir(path)))
+				return nil
+			}
+			if debug && info.Mode()&os.ModeSymlink != 0 {
+				log.Printf("skipping symbolic link %s", path)
 			}
 			return nil
 		})
