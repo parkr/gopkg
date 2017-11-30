@@ -27,7 +27,11 @@ func main() {
 		if err != nil {
 			log.Fatalf("error retrieving cwd: %+v", err)
 		}
-		fmt.Println(packageNameFromSourcePath(dir))
+		if strings.HasPrefix(dir, gopath()) {
+			fmt.Println(packageNameFromSourcePath(dir))
+		} else {
+			log.Fatalf("%q not in GOPATH %q", dir, gopath())
+		}
 	case "list":
 		filepath.Walk(gosrc(), func(path string, info os.FileInfo, err error) error {
 			if filepath.Base(path) == ".git" && info.IsDir() {
